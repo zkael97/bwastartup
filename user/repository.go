@@ -2,6 +2,7 @@ package user
 
 import "gorm.io/gorm"
 
+//menggunakan struct User
 type Repository interface {
 	Save(user User) (User, error)
 }
