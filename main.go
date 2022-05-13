@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bwastartup/handler"
 	"bwastartup/user"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -16,14 +18,14 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+	//input dati user di mapping ke struct user diarahin ke repository
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
+	router := gin.Default()
+	api := router.Group("/api/v1")
 
-	userInput := user.RegisterUserInput{}
-	userInput.Name = "Test simpen service"
-	userInput.Email = "contoh@email.com"
-	userInput.Occupation = "gelandangan"
-	userInput.Password = "password"
+	api.POST("users", userHandler.RegisterUser)
 
-	userService.RegisterUser(userInput)
+	router.Run()
 }
