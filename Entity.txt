@@ -1,0 +1,43 @@
+User
+*> id - int
+*> name - varchar
+*> occupation - varchar
+*> email - varchar
+*> pass_hash - varchar
+*> avatar_file_name - varchar
+*> role - varchar
+*> token : varchar
+*> created_at - datetime
+*> updated_at - datetime
+
+Campaigns
+*> ID - int
+*> user_id - int
+*> name - varchar
+*> short_desc - varchar
+*> desc - text
+*> goal_amount - int
+*> current_amount - int 
+*> perks - text 
+*> slug - varchar
+*> created_at - datetime
+*> updated_at - datetime
+*> backer_count - int
+
+Campaign Img
+*> ID - int
+*> campaign_id - int
+*> file_name - varchar
+*> isPrimary - bool
+*> created_at - datetime
+*> updated_at - datetime
+
+Transaction
+*> ID - int
+*> campaign_id - int
+*> user_id - int
+*> amount - int
+*> status - varchar
+*> code - varchar
+*> created_at - datetime
+*> updated_at - datetime
