@@ -9,6 +9,7 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
+	IsEmailAvailable(input CheckEmailInput) (bool, error)
 }
 
 //internal struct
@@ -60,5 +61,15 @@ func (s *service) Login(input LoginInput) (User, error) {
 	return user, nil
 }
 
-//mapping struct input ke struct user
-//save struct melalui repository
+func (s *service) IsEmailAvailable(input CheckEmailInput) (bool, error) {
+	email := input.Email //mencari email yang ada di structuntuk di variabel email
+
+	user, err := s.repository.FindByEmail(email) //untuk mencari emaiil yang ada di repository
+	if err != nil {
+		return false, err
+	}
+	if user.ID == 0 {
+		return true, nil
+	}
+	return false, nil
+}
