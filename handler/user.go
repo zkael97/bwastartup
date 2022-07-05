@@ -22,17 +22,112 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		errors := helper.FormatValidationError(err)
+		// gin berfungsi untuk map
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Register account failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
 	}
 
 	newUser, err := h.userService.RegisterUser(input)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
+		response := helper.APIResponse("Register account failed", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
 	}
 	formatter := user.FormatUser(newUser, "tokentoken")
 
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
 
 	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) Login(c *gin.Context) {
+	// User input email & password
+	// input ditangkap handler
+	// mapping dari input user ke input struct
+	// input struct passing ke service
+	// di dservice mencari user dan email dengan bantuan repository
+	// mencocokan password
+
+	var input user.LoginInput
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		// gin berfungsi untuk map
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Login failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	loggedinUser, err := h.userService.Login(input)
+
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse("Login Failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	formatter := user.FormatUser(loggedinUser, "tokentoken ")
+	response := helper.APIResponse("Successfully logged in", http.StatusOK, "success", formatter)
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *userHandler) CheckEmailAvailability(c *gin.Context) {
+	// Ada input email dari user
+	// input email akan di mapping ke struct input
+	// struct input akan di passing ke service
+	// di service akan mengecek repository email sudah ada atau belum
+	// repository akan query ke db
+	var input user.CheckEmailInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		// gin berfungsi untuk map
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Email checking failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	} //setelah menerima input lalu lolos validasi, berikutnya memanggil service
+
+	IsEmailAvailable, err := h.userService.IsEmailAvailable(input)
+	if err != nil {
+		errorMessage := gin.H{"errors": "Server Error"}
+		response := helper.APIResponse("Email checking failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+	data := gin.H{
+		"is_available": IsEmailAvailable,
+	}
+
+	metaMessage := "email registered"
+
+	if IsEmailAvailable {
+		metaMessage = "Email is available"
+	}
+
+	response := helper.APIResponse(metaMessage, http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, response)
+
+}
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	//input dari user
+	//simpan gambar di folder "image/"
+	//di service panggil repo
+	//JWT (Hardcode) ceritanya ID= 1
+	//repo ambil data user yang id = 1
+	//repo udpate data user simplan lokasi file
+
 }
