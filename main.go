@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bwastartup/auth"
 	"bwastartup/handler"
 	"bwastartup/user"
 	"log"
@@ -21,14 +22,10 @@ func main() {
 	//input dati user di mapping ke struct user diarahin ke repository
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userService.SaveAvatar(1, "images/1-profile.png")
+	userHandler := handler.NewUserHandler(userService, authService)
 
-	// ===================test====================
-
-	// ===================test====================
-
-	userHandler := handler.NewUserHandler(userService)
 	router := gin.Default()
 	api := router.Group("/api/v1")
 
