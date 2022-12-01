@@ -36,3 +36,11 @@ func main() {
 
 	router.Run()
 }
+
+//middleware
+//ambil nilai header Authorization: bearer tokentokentoken
+//dari header auth, kita ambil nilai tokennya saja
+//lalu validasi token tsb menggunakan service validate token
+//ambil nilai user_id dari payload jwt
+//dari data user dari db bedasarkan user_id dengan service
+//kalau usernya ada, set context yang isinya user
